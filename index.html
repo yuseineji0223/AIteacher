@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI先生 | AIの使い方を初心者から上級者まで学べる無料学習サイト</title>
+<meta name="description" content="AI先生は、AIへの質問の仕方やプロンプトの作り方を初心者から上級者まで楽しく学べる無料のAI学習サイトです。">
+<meta name="keywords" content="AI, ChatGPT, プロンプト">
+<meta property="og:title" content="AI先生｜AIの使い方を学ぼう">
+<meta property="og:description" content="AIへの質問の仕方やプロンプトの作り方を楽しく学べるAI学習サイトです。">
+<meta property="og:type" content="website">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans JP","Yu Gothic",sans-serif;background:linear-gradient(135deg,#9fcfe8,#d1eaf7);color:#222;transition:.3s}
+header{background:linear-gradient(135deg,#1268bd,#358fdc);color:#fff;padding:22px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+header h1{margin:0;font-size:30px} header p{margin:7px 0 0}
+.container{max-width:1000px;margin:25px auto;padding:0 15px}
+.panel{background:#fff;border-radius:18px;padding:22px;margin-bottom:20px;box-shadow:0 7px 24px rgba(0,60,100,.20);border:2px solid #9fc6dc}
+h2{margin-top:0;color:#1268bd}
+.level-buttons,.examples{display:flex;gap:10px;flex-wrap:wrap}
+.level-buttons button,.example-btn,.main-button{border:none;border-radius:12px;padding:11px 18px;cursor:pointer;font-size:15px}
+.level-buttons button{background:#dceffc;color:#1261a8}.level-buttons button:active,.main-button,.user-message{background:#1268bd;color:#fff}.main-button{margin-top:12px;font-weight:bold}.level-buttons button:hover,.main-button:hover{transform:translateY(-2px)}
+textarea{width:100%;max-width:100%;min-height:120px;resize:vertical;border:2px solid #bdd8e8;border-radius:12px;padding:15px;font-size:16px;outline:none;background:#fbfeff;display:block;margin:0;}
+textarea:focus{border-color:#1268bd}
+.result{display:none;margin-top:20px}.result-box{background:#edf7fd;border-left:5px solid #1268bd;padding:16px;border-radius:10px;margin-top:10px}
+.prompt-box{background:#fff9dc;border-left:5px solid #e0aa00;padding:16px;border-radius:10px;white-space:pre-wrap}
+.example-btn{background:#edf1f4}.example-btn:hover{background:#d9e1e7}
+.chat{height:350px;overflow-y:auto;border:2px solid #94bcd2;border-radius:12px;padding:15px;background:#f3faff}
+.message{max-width:80%;padding:12px 15px;margin:10px 0;border-radius:15px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai-message{background:#dceffc;margin-right:auto}.user-message{margin-left:auto}
+.chat-input{display:flex;gap:10px;margin-top:10px}.chat-input input{flex:1;padding:13px;border:2px solid #bdd8e8;border-radius:12px;font-size:16px;background:#fbfeff}
+.chat-input button{background:#1268bd;color:#fff;border:none;padding:0 20px;border-radius:12px;cursor:pointer}
+.lesson{padding:15px;background:#edf2f5;border-radius:12px;margin:10px 0}.lesson strong{color:#1268bd}
+.status{font-size:13px;color:#555;margin-top:8px}.error{color:#b00020}
+footer{text-align:center;padding:25px;color:#555}
+body.dark{background:#0b1220;color:#eee} body.dark .panel{background:#1f2937;border-color:#374151}
+body.dark textarea,body.dark .chat-input input{background:#111827;color:#fff;border-color:#4d5563}
+body.dark .chat{background:#111827;border-color:#4b5563} body.dark .ai-message{background:#263b52}
+body.dark .example-btn{background:#374151;color:#fff} body.dark .lesson{background:#374151}
+body.dark .result-box{background:#1d3348} body.dark .prompt-box{background:#403a20}
+</style>
+</head>
+<body>
+<header><h1>🤖 AI先生</h1><p>AIの使い方をAI先生に教えてもらおう！</p><p>AI先生は、AIを上手に使う方法を学ぶための無料学習ツールです。<br> AIへの質問の改善、プロンプトの作り方、AIへの質問方法などを練習できます。</p></header>
+<main class="container">
+<section class="panel">
+<h2>🎓 学習レベル</h2>
+<p> 学習レベルが上がるにつれて、AI先生の返答がより詳しくなりますが、時間がかかります。</p>
+<div class="level-buttons">
+<button class="active" onclick="setLevel('初級',this)">🌱 初級</button>
+<button onclick="setLevel('中級',this)">🚀 中級</button>
+<button onclick="setLevel('上級',this)">🧠 上級</button>
+</div>
+<p id="levelText">現在のレベル：初級</p>
+</section>
+
+<section class="panel">
+<h2>✨ AIへの質問を改善する</h2>
+<p>AIに聞きたいことを入力してください。AI先生が、もっとAIに伝わりやすい質問に改善します。</p>
+<textarea id="question" placeholder="例：夏休みの自由研究を考えて"></textarea>
+<button class="main-button" id="improveBtn" onclick="improveQuestion()">✨ 質問を改善する</button>
+<div id="improveStatus" class="status"></div>
+<div id="result" class="result">
+<div class="result-box"><h3>🔍 AI先生の診断</h3><p id="diagnosis"></p></div>
+<div class="result-box"><h3>💡 改善ポイント</h3><p id="advice"></p></div>
+<div class="prompt-box"><h3>📝 おすすめプロンプト</h3><p id="betterPrompt"></p></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>💡 質問例を試してみる</h2>
+<div class="examples">
+<button class="example-btn" onclick="setExample('宿題を教えて')">📚 宿題を教えて</button>
+<button class="example-btn" onclick="setExample('自由研究を考えて')">🔬 自由研究</button>
+<button class="example-btn" onclick="setExample('プログラムを作って')">💻 プログラム</button>
+<button class="example-btn" onclick="setExample('英語を教えて')">🇬🇧 英語</button>
+</div>
+</section>
+
+<section class="panel">
+<h2>💬 AI先生に質問</h2>
+<div class="chat" id="chat">
+<div class="message ai-message">🤖 こんにちは！私はAI先生です。<br>AIの使い方について何でも聞いてください！</div>
+</div>
+<div class="chat-input">
+<input id="chatInput" type="text" placeholder="AIについて質問してください">
+<button id="sendBtn" onclick="sendMessage()">送信</button>
+</div>
+<div id="chatStatus" class="status"></div>
+</section>
+
+<section class="panel">
+<h2>📖 AI先生のミニ講座</h2>
+<div class="lesson"><strong>第1回：具体的に質問しよう</strong><br>「教えて」だけではなく、「誰向けなのか」「どんな条件なのか」を伝えると、AIはより答えやすくなります。</div>
+<div class="lesson"><strong>第2回：役割を指定しよう</strong><br>「先生として説明してください」「プログラマーとして考えてください」のように役割を指定できます。</div>
+<div class="lesson"><strong>第3回：出力形式を指定しよう</strong><br>「表にしてください」「箇条書きにしてください」「中学生にも分かるようにしてください」などと指定できます。</div>
+<div class="lesson"><strong>第4回：条件を追加しよう</strong><br>文字数、個数、難易度、対象者などを指定すると、より希望に近い回答になります。</div>
+</section>
+
+<div class="panel"><button class="main-button" onclick="toggleDark()">🌙 ダークモード切替</button></div>
+</main>
+<footer>AI先生 ― AIを上手に使うための練習ツール</footer>
+
+<script>
+let currentLevel="初級";
+
+function setLevel(level,button){
+ currentLevel=level;
+ document.querySelectorAll(".level-buttons button").forEach(btn=>btn.classList.remove("active"));
+ button.classList.add("active");
+ document.getElementById("levelText").textContent="現在のレベル："+level;
+}
+function setExample(text){
+ document.getElementById("question").value=text;
+ document.getElementById("question").focus();
+}
+function addMessage(text,className){
+ const chat=document.getElementById("chat");
+ const message=document.createElement("div");
+ message.className="message "+className;
+ message.textContent=text;
+ chat.appendChild(message);
+ chat.scrollTop=chat.scrollHeight;
+}
+async function improveQuestion(){
+ const question=document.getElementById("question").value.trim();
+ if(!question){alert("AIに聞きたいことを入力してください。");return;}
+ const btn=document.getElementById("improveBtn"), status=document.getElementById("improveStatus");
+ btn.disabled=true; status.textContent="AI先生が考えています…"; status.className="status";
+ try{
+  const res=await fetch("/api/improve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,level:currentLevel})});
+  const data=await res.json();
+  if(!res.ok) throw new Error(data.error||"質問改善に失敗しました。");
+  document.getElementById("diagnosis").textContent=data.diagnosis||"";
+  document.getElementById("advice").textContent=data.advice||"";
+  document.getElementById("betterPrompt").textContent=data.betterPrompt||"";
+  document.getElementById("result").style.display="block";
+  status.textContent="完了しました。";
+ }catch(e){status.textContent=e.message;status.className="status error";}
+ finally{btn.disabled=false;}
+}
+async function sendMessage(){
+ const input=document.getElementById("chatInput"), text=input.value.trim();
+ if(!text)return;
+ const btn=document.getElementById("sendBtn"), status=document.getElementById("chatStatus");
+ addMessage(text,"user-message"); input.value=""; btn.disabled=true; status.textContent="AI先生が回答中…"; status.className="status";
+ try{
+  const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,level:currentLevel})});
+  const data=await res.json();
+  if(!res.ok) throw new Error(data.error||"AIから回答を受け取れませんでした。");
+  addMessage(data.answer,"ai-message");
+  status.textContent="";
+ }catch(e){addMessage("⚠️ "+e.message,"ai-message");status.textContent="エラーが発生しました。PowerShellの表示も確認してください。";status.className="status error";}
+ finally{btn.disabled=false;input.focus();}
+}
+document.getElementById("chatInput").addEventListener("keydown",function(e){
+ if(e.key==="Enter"){e.preventDefault();return;}
+});
+function toggleDark(){document.body.classList.toggle("dark");}
+</script>
+</body>
+</html>
