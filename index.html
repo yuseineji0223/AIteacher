@@ -10,6 +10,21 @@
 <meta property="og:description" content="AIへの質問の仕方やプロンプトの作り方を楽しく学べるAI学習サイトです。">
 <meta property="og:type" content="website">
 <style>
+.read-button{
+    display:block;
+    margin:8px 0 0 auto;
+    background:#1268bd;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:6px 10px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.read-button:hover{
+    background:#0d559b;
+}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Noto Sans JP","Yu Gothic",sans-serif;background:linear-gradient(135deg,#9fcfe8,#d1eaf7);color:#222;transition:.3s}
 header{background:linear-gradient(135deg,#1268bd,#358fdc);color:#fff;padding:22px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.2)}
@@ -30,6 +45,46 @@ textarea:focus{border-color:#1268bd}
 .ai-message{background:#dceffc;margin-right:auto}.user-message{margin-left:auto}
 .chat-input{display:flex;gap:10px;margin-top:10px}.chat-input input{flex:1;padding:13px;border:2px solid #bdd8e8;border-radius:12px;font-size:16px;background:#fbfeff}
 .chat-input button{background:#1268bd;color:#fff;border:none;padding:0 20px;border-radius:12px;cursor:pointer}
+.read-button{
+    display:block;
+    margin:8px 0 0 auto;
+    background:#1268bd;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:6px 10px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.read-button:hover{
+    background:#0d559b;
+}
+
+.read-button.stop{
+    background:#d93025;
+}
+
+.read-button.stop:hover{
+    background:#b71c1c;
+}
+.mic-button{
+ background:#e0aa00;
+ color:#fff;
+ border:none;
+ padding:0 16px;
+ border-radius:12px;
+ cursor:pointer;
+ font-size:20px;
+}
+
+.mic-button:hover{
+ transform:translateY(-2px);
+}
+
+.mic-button.recording{
+ background:#d93025;
+}
 .lesson{padding:15px;background:#edf2f5;border-radius:12px;margin:10px 0}.lesson strong{color:#1268bd}
 .status{font-size:13px;color:#555;margin-top:8px}.error{color:#b00020}
 footer{text-align:center;padding:25px;color:#555}
@@ -38,10 +93,355 @@ body.dark textarea,body.dark .chat-input input{background:#111827;color:#fff;bor
 body.dark .chat{background:#111827;border-color:#4b5563} body.dark .ai-message{background:#263b52}
 body.dark .example-btn{background:#374151;color:#fff} body.dark .lesson{background:#374151}
 body.dark .result-box{background:#1d3348} body.dark .prompt-box{background:#403a20}
+.header-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+}
+
+.header-title h1 {
+  margin: 0;
+}
+
+.speech-setting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #aaa;
+  border-radius: 30px;
+  transition: 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.switch input:checked + .slider {
+  background: #2196f3;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(24px);
+}
+
+
+/* ========================================
+   質問力100点採点
+======================================== */
+
+.score-result {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  background: #f4faff;
+  border: 2px solid #9fc6dc;
+  border-radius: 15px;
+}
+
+.score-total {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.score-number {
+  font-size: 42px;
+  font-weight: bold;
+  color: #1268bd;
+}
+
+.score-rank {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  margin: 8px 0;
+  background: white;
+  border-radius: 10px;
+  border-left: 5px solid #1268bd;
+}
+
+.score-item span {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.score-comment {
+  margin-top: 15px;
+  padding: 15px;
+  background: #edf7fd;
+  border-radius: 10px;
+  line-height: 1.7;
+}
+
+.score-advice {
+  margin-top: 15px;
+  padding: 15px;
+  background: #fff9dc;
+  border-left: 5px solid #e0aa00;
+  border-radius: 10px;
+  line-height: 1.7;
+}
+
+.score-better-prompt {
+  margin-top: 15px;
+  padding: 15px;
+  background: #eef8ee;
+  border-left: 5px solid #4caf50;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.score-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.score-actions button {
+  flex: 1;
+  min-width: 220px;
+}
+
+body.dark .score-result {
+  background: #1d3348;
+  border-color: #4b5563;
+}
+
+body.dark .score-item {
+  background: #263242;
+}
+
+body.dark .score-comment {
+  background: #263b52;
+}
+
+body.dark .score-advice {
+  background: #403a20;
+}
+
+body.dark .score-better-prompt {
+  background: #203b2a;
+}
+
+@media (max-width: 600px) {
+
+  .score-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .score-number {
+    font-size: 36px;
+  }
+
+}
+
+/* ========================================
+   🎯 AI質問トレーニング
+======================================== */
+
+.training-box {
+    margin-top: 20px;
+}
+
+.score-result {
+    margin-top: 20px;
+    padding: 25px;
+    background: #f5faff;
+    border: 2px solid #1877d2;
+    border-radius: 18px;
+}
+
+.score-total {
+    text-align: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: #1877d2;
+    margin: 20px 0;
+}
+
+#scoreRank {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.score-criteria {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.score-criteria p {
+    background: white;
+    padding: 12px;
+    border-radius: 10px;
+    margin: 0;
+}
+
+.score-criteria strong {
+    color: #1877d2;
+}
+
+.score-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#askWithScoreArea {
+    margin-top: 15px;
+}
+
+#askWithScoreBtn {
+    background: #1877d2;
+}
+
+/* ダークモード */
+
+body.dark .score-result {
+    background: #1d3348;
+}
+
+body.dark .score-criteria p {
+    background: #263b52;
+}
+/* ========================================
+   🎯 AI質問トレーニング
+======================================== */
+
+.training-question {
+  background: #edf7fd;
+  border-left: 5px solid #1268bd;
+  padding: 18px;
+  border-radius: 12px;
+  margin: 15px 0;
+}
+
+.training-question h3 {
+  margin-top: 0;
+}
+
+.training-original-question {
+  background: white;
+  border-radius: 10px;
+  padding: 18px;
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.training-result {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  background: #f5faff;
+  border: 2px solid #1268bd;
+  border-radius: 15px;
+}
+
+.training-score {
+  text-align: center;
+  font-size: 42px;
+  font-weight: bold;
+  color: #1268bd;
+  margin-bottom: 20px;
+}
+
+.training-checks p {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+.training-checks strong {
+  color: #1268bd;
+}
+
+.training-advice {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff9dc;
+  border-left: 5px solid #e0aa00;
+  border-radius: 10px;
+  line-height: 1.7;
+}
 </style>
 </head>
 <body>
-<header><h1>🤖 AI先生</h1><p>AIの使い方をAI先生に教えてもらおう！</p><p>AI先生は、AIを上手に使う方法を学ぶための無料学習ツールです。<br> AIへの質問の改善、プロンプトの作り方、AIへの質問方法などを練習できます。</p></header>
+    <header>
+  <div class="header-title">
+    <h1>🤖 AI先生</h1>
+
+    <div class="speech-setting">
+      <span>🔊 回答の読み上げ</span>
+
+      <label class="switch">
+        <input
+  type="checkbox"
+  id="autoSpeech"
+  aria-label="AIの回答を自動で読み上げる"
+>
+        <span class="slider"></span>
+      </label>
+
+      <span id="speechModeText">手動</span>
+    </div>
+  </div>
+
+  <p>AIの使い方をAI先生に教えてもらおう！</p>
+
+  <p>
+    AI先生は、AIを上手に使う方法を学ぶための無料学習ツールです。<br>
+    AIへの質問の改善、プロンプトの作り方、AIへの質問方法などを練習できます。<br>
+    🎤ボタンを押すと、音声入力をすることができます。
+  </p>
+</header>
 <main class="container">
 <section class="panel">
 <h2>🎓 学習レベル</h2>
@@ -54,12 +454,244 @@ body.dark .result-box{background:#1d3348} body.dark .prompt-box{background:#403a
 <p id="levelText">現在のレベル：初級</p>
 </section>
 
+<!-- ========================================
+     🎯 AI質問トレーニング
+======================================== -->
+
+<section class="panel" id="trainingSection">
+
+  <h2>🎯 AI質問トレーニング</h2>
+
+  <p>
+    AI先生が問題を出します。
+    AIに伝わりやすい質問を作ってみましょう！
+  </p>
+
+  <div class="training-question">
+
+    <h3>🤖 AI先生からの問題</h3>
+
+    <p id="trainingInstruction">
+      次の質問を、AIにもっと伝わりやすくしてください。
+    </p>
+
+    <div class="training-original-question"
+         id="trainingQuestion">
+      英語教えて
+    </div>
+
+  </div>
+
+  <textarea
+    id="trainingAnswer"
+    placeholder="AIに伝わりやすい質問を書いてください"
+  ></textarea>
+
+  <button
+    class="main-button"
+    id="trainingScoreBtn"
+    onclick="scoreTrainingAnswer()"
+  >
+    🎯 回答を採点する
+  </button>
+
+  <div
+    id="trainingStatus"
+    class="status">
+  </div>
+
+  <div
+    id="trainingResult"
+    class="training-result"
+  >
+
+    <div class="training-score">
+      <span id="trainingScore">0</span>点！
+    </div>
+
+    <div class="training-checks">
+
+      <p>
+        🎯 目的
+        <strong id="trainingPurpose">―</strong>
+      </p>
+
+      <p>
+        👤 対象
+        <strong id="trainingTarget">―</strong>
+      </p>
+
+      <p>
+        🔢 個数・条件
+        <strong id="trainingCondition">―</strong>
+      </p>
+
+      <p>
+        📝 出力形式
+        <strong id="trainingFormat">―</strong>
+      </p>
+
+    </div>
+
+    <div class="training-advice">
+
+      <h3>💡 さらに良くするなら</h3>
+
+      <p id="trainingAdvice"></p>
+
+    </div>
+
+    <button
+      class="main-button"
+      onclick="nextTrainingQuestion()"
+    >
+      🔄 次の問題
+    </button>
+
+  </div>
+
+</section>
 <section class="panel">
 <h2>✨ AIへの質問を改善する</h2>
 <p>AIに聞きたいことを入力してください。AI先生が、もっとAIに伝わりやすい質問に改善します。</p>
-<textarea id="question" placeholder="例：夏休みの自由研究を考えて"></textarea>
-<button class="main-button" id="improveBtn" onclick="improveQuestion()">✨ 質問を改善する</button>
+<div class="question-input-area">
+
+<label for="question" class="sr-only">
+  AIに聞きたいこと
+</label>
+
+<textarea
+  id="question"
+  placeholder="例：自分が受けられる助成金や国の支援をすべて教えて"
+></textarea>
+
+<button
+  id="questionMicBtn"
+  class="mic-button"
+  aria-label="質問を音声入力"
+  onclick="startQuestionVoiceInput()"
+>🎤</button>
+</div>
+
+<button
+  class="main-button"
+  id="improveBtn"
+  onclick="improveQuestion()"
+>
+  ✨ 質問を改善する
+</button>
+
+
+<button
+  class="main-button"
+  id="scoreBtn"
+  onclick="scoreQuestion()"
+>
+  🎯 質問力を100点満点で採点
+</button>
+
+<div id="questionVoiceStatus" class="status"></div>
 <div id="improveStatus" class="status"></div>
+<div id="scoreStatus" class="status"></div>
+
+<!-- ========================================
+     質問力100点採点結果
+======================================== -->
+
+<div id="scoreResult" class="score-result">
+
+  <div class="score-total">
+
+    <div>
+      <span id="questionScore" class="score-number">0</span>
+      <span class="score-number"> / 100点</span>
+    </div>
+
+    <div id="scoreRank" class="score-rank"></div>
+
+  </div>
+
+
+  <div class="score-item">
+    <strong>🎯 目的の明確さ</strong>
+    <span id="purposeScore">0 / 25点</span>
+  </div>
+
+
+  <div class="score-item">
+    <strong>📋 条件・背景</strong>
+    <span id="conditionScore">0 / 20点</span>
+  </div>
+
+
+  <div class="score-item">
+    <strong>💡 具体性</strong>
+    <span id="specificScore">0 / 20点</span>
+  </div>
+
+
+  <div class="score-item">
+    <strong>📝 出力形式</strong>
+    <span id="formatScore">0 / 15点</span>
+  </div>
+
+
+  <div class="score-item">
+    <strong>🔍 情報の十分さ</strong>
+    <span id="informationScore">0 / 20点</span>
+  </div>
+
+
+  <div class="score-comment">
+    <h3>📊 AI先生の評価</h3>
+    <p id="scoreComment"></p>
+  </div>
+
+
+  <div class="score-advice">
+    <h3>💡 AI先生からのアドバイス</h3>
+    <p id="scoreAdvice"></p>
+  </div>
+
+
+  <div class="score-better-prompt">
+    <h3>✨ さらに良くすると</h3>
+    <p id="scoreBetterPrompt"></p>
+  </div>
+
+
+  <div class="score-actions">
+
+    <button
+      class="main-button"
+      id="useScorePromptBtn"
+      onclick="useScoreBetterPrompt()"
+    >
+      ✨ 改善案を入力欄に入れる
+    </button>
+
+
+    <button
+  class="main-button"
+  id="askWithScoreBtn"
+  onclick="askWithScorePrompt()"
+  style="display:none;"
+>
+  🤖 この回答でAIに質問する
+</button>
+
+    <button
+      class="main-button"
+      onclick="speakScoreResult()"
+    >
+      🔊 採点結果を読み上げ
+    </button>
+
+  </div>
+
+</div>
+
+
 <div id="result" class="result">
 <div class="result-box"><h3>🔍 AI先生の診断</h3><p id="diagnosis"></p></div>
 <div class="result-box"><h3>💡 改善ポイント</h3><p id="advice"></p></div>
@@ -84,6 +716,12 @@ body.dark .result-box{background:#1d3348} body.dark .prompt-box{background:#403a
 </div>
 <div class="chat-input">
 <input id="chatInput" type="text" placeholder="AIについて質問してください">
+<button
+  id="micBtn"
+  class="mic-button"
+  aria-label="音声入力を開始"
+  onclick="startVoiceInput()"
+>🎤</button>
 <button id="sendBtn" onclick="sendMessage()">送信</button>
 </div>
 <div id="chatStatus" class="status"></div>
@@ -97,12 +735,189 @@ body.dark .result-box{background:#1d3348} body.dark .prompt-box{background:#403a
 <div class="lesson"><strong>第4回：条件を追加しよう</strong><br>文字数、個数、難易度、対象者などを指定すると、より希望に近い回答になります。</div>
 </section>
 
+<!-- 学習記録・レベルアップ -->
+<div class="panel" id="learningPanel">
+    <h2>🏆 学習記録・レベルアップ</h2>
+
+    <p>質問力レベル：
+        <strong id="learningLevel">レベル 1</strong>
+    </p>
+
+    <p>経験値：<strong id="learningXP">0 XP</strong></p>
+
+    <div style="background:#ddd; border-radius:10px; overflow:hidden;">
+        <div id="learningProgress"
+             style="width:0%; height:14px; background:#1877d2;">
+        </div>
+    </div>
+
+    <p id="learningNext">次のレベルまであと100 XP</p>
+
+    <div class="result-box">
+        <p>挑戦回数：<strong id="learningCount">0</strong> 回</p>
+        <p>平均点：<strong id="learningAverage">0</strong> 点</p>
+        <p>最高点：<strong id="learningBest">0</strong> 点</p>
+    </div>
+
+    <h3>📚 最近の学習記録</h3>
+    <ul id="learningHistory">
+        <li>まだ記録がありません。</li>
+    </ul>
+</div>
+
 <div class="panel"><button class="main-button" onclick="toggleDark()">🌙 ダークモード切替</button></div>
 </main>
 <footer>AI先生 ― AIを上手に使うための練習ツール</footer>
 
 <script>
 let currentLevel="初級";
+let lastAIAnswer = "";
+
+function speakText(text){
+ if(!text) return;
+
+ // 現在の読み上げを停止
+ speechSynthesis.cancel();
+
+ const utterance = new SpeechSynthesisUtterance(text);
+
+ // 日本語
+ utterance.lang = "ja-JP";
+
+ // 読み上げ速度
+ utterance.rate = 1.0;
+
+ // 声の高さ
+ utterance.pitch = 1.0;
+
+ speechSynthesis.speak(utterance);
+}
+
+function speakLastAnswer(){
+ if(!lastAIAnswer){
+  alert("まだAI先生の回答がありません。");
+  return;
+ }
+
+ speakText(lastAIAnswer);
+}
+const SpeechRecognition =
+ window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if(SpeechRecognition){
+ recognition = new SpeechRecognition();
+ recognition.lang = "ja-JP";
+// ================================
+// 「AIへの質問を改善する」用の音声入力
+// ================================
+
+function startQuestionVoiceInput(){
+
+  if(!SpeechRecognition){
+
+    alert("このブラウザでは音声入力に対応していません。");
+
+    return;
+  }
+
+  const questionMicBtn =
+    document.getElementById("questionMicBtn");
+
+  const status =
+    document.getElementById("questionVoiceStatus");
+
+  const question =
+    document.getElementById("question");
+
+  const questionRecognition =
+    new SpeechRecognition();
+
+  questionRecognition.lang = "ja-JP";
+  questionRecognition.continuous = false;
+  questionRecognition.interimResults = false;
+
+  questionRecognition.onstart = function(){
+
+    questionMicBtn.classList.add("recording");
+
+    status.textContent =
+      "🎤 話してください…";
+
+  };
+
+  questionRecognition.onresult = function(event){
+
+    const text =
+      event.results[0][0].transcript;
+
+    // 入力欄に音声認識結果を追加
+    if(question.value.trim()){
+
+      question.value += " " + text;
+
+    }else{
+
+      question.value = text;
+
+    }
+
+    status.textContent =
+      "音声入力が完了しました。";
+
+  };
+
+  questionRecognition.onerror = function(){
+
+    status.textContent =
+      "音声入力でエラーが発生しました。";
+
+  };
+
+  questionRecognition.onend = function(){
+
+    questionMicBtn.classList.remove("recording");
+
+  };
+
+  questionRecognition.start();
+
+}
+ recognition.continuous = false;
+ recognition.interimResults = false;
+
+ recognition.onstart = function(){
+  document.getElementById("micBtn").classList.add("recording");
+  document.getElementById("chatStatus").textContent =
+   "🎤 話してください…";
+ };
+
+ recognition.onresult = function(event){
+  const text = event.results[0][0].transcript;
+  document.getElementById("chatInput").value += text;
+  document.getElementById("chatStatus").textContent =
+   "音声入力が完了しました。";
+ };
+
+ recognition.onerror = function(){
+  document.getElementById("chatStatus").textContent =
+   "音声入力でエラーが発生しました。";
+ };
+
+ recognition.onend = function(){
+  document.getElementById("micBtn").classList.remove("recording");
+ };
+}
+
+function startVoiceInput(){
+ if(!recognition){
+  alert("このブラウザでは音声入力に対応していません。");
+  return;
+ }
+
+ recognition.start();
+}
 
 function setLevel(level,button){
  currentLevel=level;
@@ -118,10 +933,124 @@ function addMessage(text,className){
  const chat=document.getElementById("chat");
  const message=document.createElement("div");
  message.className="message "+className;
- message.textContent=text;
+
+ const textElement=document.createElement("div");
+ textElement.textContent=text;
+ message.appendChild(textElement);
+
+ // AIの回答だけに読み上げボタンを追加
+ if(className.includes("ai-message")){
+   const readButton=document.createElement("button");
+   readButton.className="read-button";
+   readButton.textContent="🔊 読み上げ";
+
+readButton.onclick=function(){
+
+  // 読み上げ中なら停止
+  if(speechSynthesis.speaking){
+    speechSynthesis.cancel();
+
+    readButton.textContent="🔊 読み上げ";
+    readButton.classList.remove("stop");
+
+    return;
+  }
+
+  // 読み上げ開始
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang="ja-JP";
+  utterance.rate=1.0;
+  utterance.pitch=1.0;
+
+  readButton.textContent="⏹ 停止";
+  readButton.classList.add("stop");
+
+  // 読み上げ終了
+  utterance.onend=function(){
+    readButton.textContent="🔊 読み上げ";
+    readButton.classList.remove("stop");
+  };
+
+  // エラー時
+  utterance.onerror=function(){
+    readButton.textContent="🔊 読み上げ";
+    readButton.classList.remove("stop");
+  };
+
+  speechSynthesis.speak(utterance);
+};
+   message.appendChild(readButton);
+ }
+
  chat.appendChild(message);
  chat.scrollTop=chat.scrollHeight;
 }
+function addReadButton(elementId, text){
+
+  const element = document.getElementById(elementId);
+
+  if(!element || !text) return;
+
+  // すでにボタンがあれば削除
+  const oldButton = element.parentElement.querySelector(
+    ".improve-read-button"
+  );
+
+  if(oldButton){
+    oldButton.remove();
+  }
+
+  const readButton = document.createElement("button");
+
+  readButton.className = "read-button improve-read-button";
+  readButton.textContent = "🔊 読み上げ";
+
+  readButton.onclick = function(){
+
+    // 読み上げ中なら停止
+    if(speechSynthesis.speaking){
+
+      speechSynthesis.cancel();
+
+      readButton.textContent = "🔊 読み上げ";
+      readButton.classList.remove("stop");
+
+      return;
+    }
+
+    // 読み上げ開始
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    utterance.lang = "ja-JP";
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    readButton.textContent = "⏹ 停止";
+    readButton.classList.add("stop");
+
+    // 読み上げ終了
+    utterance.onend = function(){
+
+      readButton.textContent = "🔊 読み上げ";
+      readButton.classList.remove("stop");
+
+    };
+
+    // エラー時
+    utterance.onerror = function(){
+
+      readButton.textContent = "🔊 読み上げ";
+      readButton.classList.remove("stop");
+
+    };
+
+    speechSynthesis.speak(utterance);
+
+  };
+
+  element.parentElement.appendChild(readButton);
+}
+
 async function improveQuestion(){
  const question=document.getElementById("question").value.trim();
  if(!question){alert("AIに聞きたいことを入力してください。");return;}
@@ -131,14 +1060,338 @@ async function improveQuestion(){
   const res=await fetch("/api/improve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,level:currentLevel})});
   const data=await res.json();
   if(!res.ok) throw new Error(data.error||"質問改善に失敗しました。");
-  document.getElementById("diagnosis").textContent=data.diagnosis||"";
-  document.getElementById("advice").textContent=data.advice||"";
-  document.getElementById("betterPrompt").textContent=data.betterPrompt||"";
-  document.getElementById("result").style.display="block";
+document.getElementById("diagnosis").textContent=data.diagnosis||"";
+document.getElementById("advice").textContent=data.advice||"";
+document.getElementById("betterPrompt").textContent=data.betterPrompt||"";
+
+document.getElementById("result").style.display="block";
+// 読み上げボタンを追加
+addReadButton("diagnosis", data.diagnosis||"");
+addReadButton("advice", data.advice||"");
+addReadButton("betterPrompt", data.betterPrompt||"");
+
+status.textContent="完了しました。";
   status.textContent="完了しました。";
  }catch(e){status.textContent=e.message;status.className="status error";}
  finally{btn.disabled=false;}
 }
+// ========================================
+// 質問力100点採点
+// ========================================
+
+async function scoreQuestion(){
+
+  const question =
+    document.getElementById("question").value.trim();
+
+  if(!question){
+
+    alert("採点する質問を入力してください。");
+
+    return;
+  }
+
+
+  const btn =
+    document.getElementById("scoreBtn");
+
+  const status =
+    document.getElementById("scoreStatus");
+
+
+  btn.disabled = true;
+
+  btn.textContent = "🎯 採点中...";
+
+  status.textContent =
+    "AI先生が質問力を採点しています…";
+
+  status.className = "status";
+
+
+  try{
+
+    const res = await fetch(
+      "/api/score-question",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          question: question,
+          level: currentLevel
+        })
+      }
+    );
+
+
+    const data = await res.json();
+
+
+    if(!res.ok){
+
+      throw new Error(
+        data.error ||
+        "質問力の採点に失敗しました。"
+      );
+
+    }
+saveLearningRecord(data.total, "質問力採点");
+
+    // ================================
+// 総合点
+// ================================
+
+document.getElementById(
+  "questionScore"
+).textContent = data.total;
+// ========================================
+// 90点以上ならボタンを表示
+// ========================================
+
+const askWithScoreBtn =
+  document.getElementById("askWithScoreBtn");
+
+if (Number(data.total) >= 90) {
+
+  askWithScoreBtn.style.display = "block";
+} else {
+
+  askWithScoreBtn.style.display = "none";
+
+}
+
+
+
+    // ================================
+    // ランク
+    // ================================
+
+    document.getElementById(
+      "scoreRank"
+    ).textContent = data.rank;
+
+
+    // ================================
+    // 各項目
+    // ================================
+
+    document.getElementById(
+      "purposeScore"
+    ).textContent =
+      data.purpose + " / 25点";
+
+
+    document.getElementById(
+      "conditionScore"
+    ).textContent =
+      data.condition + " / 20点";
+
+
+    document.getElementById(
+      "specificScore"
+    ).textContent =
+      data.specific + " / 20点";
+
+
+    document.getElementById(
+      "formatScore"
+    ).textContent =
+      data.format + " / 15点";
+
+
+    document.getElementById(
+      "informationScore"
+    ).textContent =
+      data.information + " / 20点";
+
+
+    // ================================
+    // コメント
+    // ================================
+
+    document.getElementById(
+      "scoreComment"
+    ).textContent =
+      data.comment || "";
+
+
+    // ================================
+    // アドバイス
+    // ================================
+
+    document.getElementById(
+      "scoreAdvice"
+    ).textContent =
+      data.advice || "";
+
+
+    // ================================
+    // 改善案
+    // ================================
+
+    document.getElementById(
+      "scoreBetterPrompt"
+    ).textContent =
+      data.betterPrompt || "";
+
+
+    // ================================
+    // 結果を表示
+    // ================================
+
+    document.getElementById(
+      "scoreResult"
+    ).style.display = "block";
+
+
+    status.textContent =
+      "採点が完了しました。";
+
+
+  }catch(e){
+
+    status.textContent =
+      e.message;
+
+    status.className =
+      "status error";
+
+
+  }finally{
+
+    btn.disabled = false;
+
+    btn.textContent =
+      "🎯 質問力を100点満点で採点";
+
+  }
+
+}
+// ========================================
+// 採点で生成された改善案を入力欄へ
+// ========================================
+
+function useScoreBetterPrompt(){
+
+  const betterPrompt =
+    document.getElementById(
+      "scoreBetterPrompt"
+    ).textContent.trim();
+
+
+  if(!betterPrompt){
+
+    alert("まだ改善案がありません。");
+
+    return;
+  }
+
+
+  document.getElementById(
+    "question"
+  ).value = betterPrompt;
+
+
+  document.getElementById(
+    "question"
+  ).focus();
+
+
+  document.getElementById(
+    "question"
+  ).scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+}
+// ========================================
+// 90点以上の質問をAI先生に送る
+// ========================================
+
+function askWithScorePrompt(){
+
+  const question =
+    document.getElementById("question").value.trim();
+
+  if(!question){
+    alert("質問が入力されていません。");
+    return;
+  }
+
+  document.getElementById("chatInput").value = question;
+
+  document.getElementById("chatInput").scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  setTimeout(() => {
+    sendMessage();
+  }, 500);
+}
+// ========================================
+// 採点結果の読み上げ
+// ========================================
+
+function speakScoreResult(){
+
+  const score =
+    document.getElementById(
+      "questionScore"
+    ).textContent;
+
+
+  const rank =
+    document.getElementById(
+      "scoreRank"
+    ).textContent;
+
+
+  const comment =
+    document.getElementById(
+      "scoreComment"
+    ).textContent;
+
+
+  const advice =
+    document.getElementById(
+      "scoreAdvice"
+    ).textContent;
+
+
+  if(!score || score === "0"){
+
+    alert("まだ質問力の採点をしていません。");
+
+    return;
+  }
+
+
+  const text =
+    "質問力は" +
+    score +
+    "点です。" +
+    rank +
+    "。" +
+    comment +
+    "。" +
+    advice;
+
+
+  speakText(text);
+
+}
+const autoSpeech = document.getElementById("autoSpeech");
+const speechModeText = document.getElementById("speechModeText");
+
+autoSpeech.addEventListener("change", () => {
+  speechModeText.textContent = autoSpeech.checked ? "自動" : "手動";
+});
 async function sendMessage(){
  const input=document.getElementById("chatInput"), text=input.value.trim();
  if(!text)return;
@@ -149,14 +1402,400 @@ async function sendMessage(){
   const data=await res.json();
   if(!res.ok) throw new Error(data.error||"AIから回答を受け取れませんでした。");
   addMessage(data.answer,"ai-message");
-  status.textContent="";
+lastAIAnswer = data.answer;
+
+// 自動読み上げがONならAIの回答を読み上げる
+if (autoSpeech.checked) {
+  speakText(data.answer);
+}
+
+status.textContent="";
  }catch(e){addMessage("⚠️ "+e.message,"ai-message");status.textContent="エラーが発生しました。PowerShellの表示も確認してください。";status.className="status error";}
  finally{btn.disabled=false;input.focus();}
 }
 document.getElementById("chatInput").addEventListener("keydown",function(e){
  if(e.key==="Enter"){e.preventDefault();return;}
 });
+const trainingQuestions = [
+
+  "英語教えて",
+
+  "自由研究を考えて",
+
+  "歴史を教えて",
+
+  "プログラミングを教えて",
+
+  "数学の問題を教えて"
+
+];
+
+let trainingIndex = 0;
+
+
+function nextTrainingQuestion(){
+
+  trainingIndex++;
+
+  if(
+    trainingIndex >= trainingQuestions.length
+  ){
+
+    trainingIndex = 0;
+
+  }
+
+  document.getElementById(
+    "trainingQuestion"
+  ).textContent =
+    trainingQuestions[trainingIndex];
+
+
+  document.getElementById(
+    "trainingAnswer"
+  ).value = "";
+
+
+  document.getElementById(
+    "trainingResult"
+  ).style.display = "none";
+
+
+  document.getElementById(
+    "trainingStatus"
+  ).textContent = "";
+
+}
+
+async function nextTrainingQuestion() {
+  const questionBox = document.getElementById("trainingQuestion");
+  const answerBox = document.getElementById("trainingAnswer");
+  const status = document.getElementById("trainingStatus");
+  const result = document.getElementById("trainingResult");
+  const button = document.getElementById("trainingScoreBtn");
+
+  status.textContent = "AI先生が新しい問題を考えています…";
+  result.style.display = "none";
+  answerBox.value = "";
+
+  try {
+    const response = await fetch("/api/training-question", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        level: typeof currentLevel !== "undefined"
+          ? currentLevel : "初級"
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "問題を作成できませんでした。");
+    }
+
+    questionBox.textContent = data.question;
+    status.textContent = "新しい問題です。質問文を考えてみましょう！";
+    answerBox.focus();
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+async function scoreTrainingAnswer() {
+  const question = document.getElementById("trainingQuestion").textContent.trim();
+  const answer = document.getElementById("trainingAnswer").value.trim();
+  const status = document.getElementById("trainingStatus");
+  const result = document.getElementById("trainingResult");
+  const button = document.getElementById("trainingScoreBtn");
+
+  if (!answer) {
+    status.textContent = "まず、AIへの質問文を入力してください。";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "AI先生が採点しています…";
+  result.style.display = "none";
+
+  try {
+    const response = await fetch("/api/training-score", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: question,
+        answer: answer,
+        level: typeof currentLevel !== "undefined"
+          ? currentLevel : "初級"
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "採点できませんでした。");
+    }
+
+    document.getElementById("trainingScore").textContent = data.total;
+    document.getElementById("trainingPurpose").textContent =
+      data.purpose + " / 25点";
+    document.getElementById("trainingTarget").textContent =
+      data.target + " / 25点";
+    document.getElementById("trainingCondition").textContent =
+      data.condition + " / 25点";
+    document.getElementById("trainingFormat").textContent =
+      data.format + " / 25点";
+    document.getElementById("trainingAdvice").textContent =
+      data.advice + "\n\n改善例：\n" + data.betterPrompt;
+
+    result.style.display = "block";
+    status.textContent = "採点が完了しました！";
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+// ページを開いたときも、AIに最初の問題を作ってもらう
+document.addEventListener("DOMContentLoaded", () => {
+  nextTrainingQuestion();
+});
+
 function toggleDark(){document.body.classList.toggle("dark");}
+// ========================================
+// 🎯 AI質問トレーニング
+// ========================================
+
+async function scoreTrainingAnswer(){
+
+  const answer =
+    document.getElementById("trainingAnswer")
+      .value.trim();
+
+  if(!answer){
+
+    alert("回答を入力してください。");
+
+    return;
+  }
+
+  const btn =
+    document.getElementById("trainingScoreBtn");
+
+  const status =
+    document.getElementById("trainingStatus");
+
+  btn.disabled = true;
+
+  btn.textContent = "🎯 採点中...";
+
+  status.textContent =
+    "AI先生が回答を採点しています…";
+
+  status.className = "status";
+
+  try{
+
+    const question =
+      document.getElementById(
+        "trainingQuestion"
+      ).textContent.trim();
+
+    const res = await fetch(
+      "/api/training-score",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          question: question,
+
+          answer: answer,
+
+          level: currentLevel
+
+        })
+
+      }
+    );
+    
+
+    const data = await res.json();
+
+    if(!res.ok){
+
+      throw new Error(
+        data.error ||
+        "採点に失敗しました。"
+      );
+
+    }
+
+    // 点数
+    document.getElementById(
+      "trainingScore"
+    ).textContent = data.total;
+
+
+    // 各評価
+    document.getElementById(
+      "trainingPurpose"
+    ).textContent = data.purpose;
+
+
+    document.getElementById(
+      "trainingTarget"
+    ).textContent = data.target;
+
+
+    document.getElementById(
+      "trainingCondition"
+    ).textContent = data.condition;
+
+
+    document.getElementById(
+      "trainingFormat"
+    ).textContent = data.format;
+
+
+    // アドバイス
+    document.getElementById(
+      "trainingAdvice"
+    ).textContent =
+      data.advice || "";
+
+
+    // 結果表示
+    document.getElementById(
+      "trainingResult"
+    ).style.display = "block";
+
+    saveLearningRecord(data.total, "トレーニング");
+    status.textContent =
+      "採点が完了しました！";
+
+  }catch(e){
+
+    status.textContent =
+      e.message;
+
+    status.className =
+      "status error";
+
+  }finally{
+
+    btn.disabled = false;
+
+    btn.textContent =
+      "🎯 回答を採点する";
+
+  }
+
+}
+
+function renderLearningStats() {
+    const records = JSON.parse(
+        localStorage.getItem("aiSenseiRecords") || "[]"
+    );
+
+    const xp = Number(
+        localStorage.getItem("aiSenseiXP") || 0
+    );
+
+    const level = Math.min(100, Math.floor(xp / 100) + 1);
+    const progress = xp % 100;
+
+    document.getElementById("learningLevel").textContent =
+        "レベル " + level;
+
+    document.getElementById("learningXP").textContent =
+        xp + " XP";
+
+    document.getElementById("learningProgress").style.width =
+        progress + "%";
+
+    document.getElementById("learningNext").textContent =
+        level >= 100
+            ? "最高レベル達成！"
+            : "次のレベルまであと " + (100 - progress) + " XP";
+
+    document.getElementById("learningCount").textContent =
+        records.length;
+
+    const average = records.length
+        ? records.reduce((sum, r) => sum + r.score, 0) / records.length
+        : 0;
+
+    const best = records.length
+        ? Math.max(...records.map(r => r.score))
+        : 0;
+
+    document.getElementById("learningAverage").textContent =
+        average.toFixed(1);
+
+    document.getElementById("learningBest").textContent = best;
+
+    const history = document.getElementById("learningHistory");
+    history.replaceChildren();
+
+    if (records.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "まだ記録がありません。";
+        history.appendChild(li);
+        return;
+    }
+
+    records.slice(-10).reverse().forEach(record => {
+        const li = document.createElement("li");
+        li.textContent =
+            `${record.date}｜${record.type}｜${record.score}点`;
+        history.appendChild(li);
+    });
+}
+
+function saveLearningRecord(score, type) {
+    score = Number(score);
+
+    if (!Number.isFinite(score)) return;
+
+    score = Math.max(0, Math.min(100, Math.round(score)));
+
+    const records = JSON.parse(
+        localStorage.getItem("aiSenseiRecords") || "[]"
+    );
+
+    records.push({
+        date: new Date().toLocaleDateString("ja-JP"),
+        type: type,
+        score: score
+    });
+
+    // 最新100件を保存
+    localStorage.setItem(
+        "aiSenseiRecords",
+        JSON.stringify(records.slice(-100))
+    );
+
+    const oldXP = Number(
+        localStorage.getItem("aiSenseiXP") || 0
+    );
+
+    // 挑戦するたびに10 XP、得点に応じて追加XP
+    const gainedXP = 10 + Math.floor(score / 10);
+
+    localStorage.setItem(
+        "aiSenseiXP",
+        String(Math.min(9900, oldXP + gainedXP))
+    );
+
+    renderLearningStats();
+}
+
+renderLearningStats();
+
 </script>
 </body>
 </html>
