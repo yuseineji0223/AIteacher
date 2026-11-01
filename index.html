@@ -1432,41 +1432,6 @@ const trainingQuestions = [
 
 let trainingIndex = 0;
 
-
-function nextTrainingQuestion(){
-
-  trainingIndex++;
-
-  if(
-    trainingIndex >= trainingQuestions.length
-  ){
-
-    trainingIndex = 0;
-
-  }
-
-  document.getElementById(
-    "trainingQuestion"
-  ).textContent =
-    trainingQuestions[trainingIndex];
-
-
-  document.getElementById(
-    "trainingAnswer"
-  ).value = "";
-
-
-  document.getElementById(
-    "trainingResult"
-  ).style.display = "none";
-
-
-  document.getElementById(
-    "trainingStatus"
-  ).textContent = "";
-
-}
-
 async function nextTrainingQuestion() {
   const questionBox = document.getElementById("trainingQuestion");
   const answerBox = document.getElementById("trainingAnswer");
@@ -1501,59 +1466,6 @@ async function nextTrainingQuestion() {
   }
 }
 
-async function scoreTrainingAnswer() {
-  const question = document.getElementById("trainingQuestion").textContent.trim();
-  const answer = document.getElementById("trainingAnswer").value.trim();
-  const status = document.getElementById("trainingStatus");
-  const result = document.getElementById("trainingResult");
-  const button = document.getElementById("trainingScoreBtn");
-
-  if (!answer) {
-    status.textContent = "まず、AIへの質問文を入力してください。";
-    return;
-  }
-
-  button.disabled = true;
-  status.textContent = "AI先生が採点しています…";
-  result.style.display = "none";
-
-  try {
-    const response = await fetch("/api/training-score", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        question: question,
-        answer: answer,
-        level: typeof currentLevel !== "undefined"
-          ? currentLevel : "初級"
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || "採点できませんでした。");
-    }
-
-    document.getElementById("trainingScore").textContent = data.total;
-    document.getElementById("trainingPurpose").textContent =
-      data.purpose + " / 25点";
-    document.getElementById("trainingTarget").textContent =
-      data.target + " / 25点";
-    document.getElementById("trainingCondition").textContent =
-      data.condition + " / 25点";
-    document.getElementById("trainingFormat").textContent =
-      data.format + " / 25点";
-    document.getElementById("trainingAdvice").textContent =
-      data.advice + "\n\n改善例：\n" + data.betterPrompt;
-
-    result.style.display = "block";
-    status.textContent = "採点が完了しました！";
-  } catch (error) {
-    status.textContent = error.message;
-  } finally {
-    button.disabled = false;
-  }
-}
 
 // ページを開いたときも、AIに最初の問題を作ってもらう
 document.addEventListener("DOMContentLoaded", () => {
