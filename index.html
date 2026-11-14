@@ -1820,6 +1820,213 @@ function saveLearningRecord(score, type) {
 
 renderLearningStats();
 
+// ==============================
+// AI学習日記
+// ==============================
+
+const DIARY_STORAGE_KEY = "aiTeacherDiaries";
+
+let editingDiaryId = null;
+
+
+// 日記データを取得する
+function getDiaryEntries() {
+    try {
+        const saved = localStorage.getItem(DIARY_STORAGE_KEY);
+        const entries = saved ? JSON.parse(saved) : [];
+
+        return Array.isArray(entries) ? entries : [];
+    } catch (error) {
+        console.error("日記データの読み込みエラー:", error);
+        return [];
+    }
+}
+
+
+// 日記を保存する
+function saveDiaryEntry() {
+
+    const date = document.getElementById("diaryDate").value;
+    const title = document.getElementById("diaryTitle").value.trim();
+    const content = document.getElementById("diaryContent").value.trim();
+    const status = document.getElementById("diaryStatus");
+
+    if (!date || !title || !content) {
+        status.textContent = "日付・タイトル・内容を入力してください。";
+        return;
+    }
+
+    const entries = getDiaryEntries();
+
+    if (editingDiaryId !== null) {
+
+        const index = entries.findIndex(
+            entry => entry.id === editingDiaryId
+        );
+
+        if (index !== -1) {
+            entries[index] = {
+                ...entries[index],
+                date,
+                title,
+                content
+            };
+        }
+
+    } else {
+
+        entries.push({
+            id: Date.now().toString(),
+            date,
+            title,
+            content
+        });
+
+    }
+
+    try {
+        localStorage.setItem(
+            DIARY_STORAGE_KEY,
+            JSON.stringify(entries)
+        );
+
+        status.textContent = "日記を保存しました！";
+
+        clearDiaryForm();
+        loadDiaryEntries();
+
+    } catch (error) {
+        console.error("日記の保存エラー:", error);
+        status.textContent = "保存できませんでした。保存容量などを確認してください。";
+    }
+}
+
+
+// 入力欄をクリアする
+function clearDiaryForm() {
+
+    document.getElementById("diaryDate").value =
+        new Date().toLocaleDateString("sv-SE");
+
+    document.getElementById("diaryTitle").value = "";
+    document.getElementById("diaryContent").value = "";
+
+    editingDiaryId = null;
+
+    document.getElementById("diarySaveButton").textContent =
+        "💾 日記を保存する";
+}
+
+
+// 過去の日記を表示する
+function loadDiaryEntries() {
+
+    const list = document.getElementById("diaryList");
+    const entries = getDiaryEntries();
+
+    list.replaceChildren();
+
+    entries.sort((a, b) => b.date.localeCompare(a.date));
+
+    if (entries.length === 0) {
+        list.textContent = "まだ日記がありません。";
+        return;
+    }
+
+    entries.forEach(entry => {
+
+        const box = document.createElement("div");
+        box.className = "diary-entry";
+
+        const heading = document.createElement("h3");
+        heading.textContent = entry.title;
+
+        const date = document.createElement("small");
+        date.textContent = "📅 " + entry.date;
+
+        const content = document.createElement("p");
+        content.textContent = entry.content;
+
+        const editButton = document.createElement("button");
+        editButton.className = "diary-edit";
+        editButton.textContent = "✏️ 編集";
+        editButton.addEventListener("click", () => {
+            editDiaryEntry(entry.id);
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "diary-delete";
+        deleteButton.textContent = "🗑️ 削除";
+        deleteButton.addEventListener("click", () => {
+            deleteDiaryEntry(entry.id);
+        });
+
+        box.append(
+            heading,
+            date,
+            content,
+            editButton,
+            deleteButton
+        );
+
+        list.appendChild(box);
+    });
+}
+
+
+// 日記を編集する
+function editDiaryEntry(id) {
+
+    const entries = getDiaryEntries();
+
+    const entry = entries.find(item => item.id === id);
+
+    if (!entry) return;
+
+    document.getElementById("diaryDate").value = entry.date;
+    document.getElementById("diaryTitle").value = entry.title;
+    document.getElementById("diaryContent").value = entry.content;
+
+    editingDiaryId = id;
+
+    document.getElementById("diarySaveButton").textContent =
+        "💾 変更を保存する";
+
+    document.getElementById("diarySection").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+
+// 日記を削除する
+function deleteDiaryEntry(id) {
+
+    if (!confirm("この日記を削除しますか？")) {
+        return;
+    }
+
+    const entries = getDiaryEntries().filter(
+        entry => entry.id !== id
+    );
+
+    localStorage.setItem(
+        DIARY_STORAGE_KEY,
+        JSON.stringify(entries)
+    );
+
+    loadDiaryEntries();
+
+    document.getElementById("diaryStatus").textContent =
+        "日記を削除しました。";
+}
+
+
+// 日記機能の初期化
+document.getElementById("diaryDate").value =
+    new Date().toLocaleDateString("sv-SE");
+
+loadDiaryEntries();
+
 </script>
 </body>
 </html>
