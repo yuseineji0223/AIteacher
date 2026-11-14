@@ -788,6 +788,65 @@ body.dark .score-criteria p {
 <div class="lesson"><strong>第4回：条件を追加しよう</strong><br>文字数、個数、難易度、対象者などを指定すると、より希望に近い回答になります。</div>
 </section>
 
+<!-- AI学習日記 -->
+
+<div class="panel" id="diarySection">
+
+    <h2>📖 AI学習日記</h2>
+
+    <p>
+        今日学んだことや、AIを使って気づいたことを記録しましょう。
+    </p>
+
+    <label for="diaryDate">📅 日付</label>
+    <input
+        type="date"
+        id="diaryDate"
+        class="diary-input"
+    >
+
+    <label for="diaryTitle">📝 タイトル</label>
+    <input
+        type="text"
+        id="diaryTitle"
+        class="diary-input"
+        placeholder="例：AIへの質問の仕方を学んだ"
+    >
+
+    <label for="diaryContent">今日の学習内容</label>
+    <textarea
+        id="diaryContent"
+        class="diary-input"
+        placeholder="今日学んだこと、気づいたことを書いてください..."
+    ></textarea>
+
+    <button
+        class="main-button"
+        id="diarySaveButton"
+        onclick="saveDiaryEntry()"
+    >
+        💾 日記を保存する
+    </button>
+
+    <button
+        class="example-btn"
+        onclick="clearDiaryForm()"
+    >
+        入力をクリア
+    </button>
+
+    <p id="diaryStatus"></p>
+
+    <hr>
+
+    <h2>📚 過去の日記</h2>
+
+    <div id="diaryList">
+        まだ日記がありません。
+    </div>
+
+</div>
+
 <!-- 学習記録・レベルアップ -->
 <div class="panel" id="learningPanel">
     <h2>🏆 学習記録・レベルアップ</h2>
